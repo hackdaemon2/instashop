@@ -1,0 +1,851 @@
+basePath: /
+definitions:
+  handler.CreateProductRequest:
+    properties:
+      currency:
+        maxLength: 3
+        minLength: 3
+        type: string
+      price:
+        type: number
+      product_description:
+        type: string
+      product_name:
+        minLength: 3
+        type: string
+      stock:
+        type: integer
+      user_id:
+        type: string
+    required:
+    - currency
+    - price
+    - product_name
+    - stock
+    - user_id
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        type: boolean
+      message:
+        type: string
+    type: object
+  handler.ListOrderResponse:
+    properties:
+      message:
+        type: string
+      orders:
+        items:
+          $ref: '#/definitions/model.Order'
+        type: array
+      page:
+        type: integer
+      size:
+        type: integer
+      total_orders:
+        type: integer
+      total_pages:
+        type: integer
+    type: object
+  handler.LoginRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handler.OrderRequest:
+    properties:
+      order_reference:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/handler.ProductDTO'
+        type: array
+      user_id:
+        type: string
+    required:
+    - order_reference
+    - products
+    - user_id
+    type: object
+  handler.OrderResponse:
+    properties:
+      message:
+        type: string
+      order:
+        $ref: '#/definitions/model.Order'
+    type: object
+  handler.ProductDTO:
+    properties:
+      product_code:
+        type: string
+      product_quantity:
+        type: integer
+    required:
+    - product_code
+    - product_quantity
+    type: object
+  handler.ProductResponse:
+    properties:
+      message:
+        type: string
+      product:
+        $ref: '#/definitions/model.Product'
+    type: object
+  handler.SignupRequest:
+    properties:
+      confirm_password:
+        minLength: 8
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      password:
+        minLength: 8
+        type: string
+      user_currency:
+        maxLength: 3
+        minLength: 3
+        type: string
+    required:
+    - confirm_password
+    - email
+    - first_name
+    - last_name
+    - password
+    - user_currency
+    type: object
+  handler.UpdateOrderRequest:
+    properties:
+      order_status:
+        type: string
+    required:
+    - order_status
+    type: object
+  handler.UpdateProductRequest:
+    properties:
+      currency:
+        maxLength: 3
+        minLength: 3
+        type: string
+      price:
+        type: number
+      product_description:
+        type: string
+      product_name:
+        minLength: 3
+        type: string
+      stock:
+        type: integer
+    required:
+    - currency
+    - price
+    - product_name
+    - stock
+    type: object
+  model.Order:
+    properties:
+      created_at:
+        type: string
+      order_reference:
+        example: order123
+        type: string
+      order_status:
+        allOf:
+        - $ref: '#/definitions/model.OrderStatus'
+        description: Pending, Shipped, Delivered, Canceled
+        example: Pending
+      products:
+        items:
+          $ref: '#/definitions/model.Product'
+        type: array
+      total_price:
+        example: 10.5
+        type: number
+      updated_at:
+        type: string
+    type: object
+  model.OrderStatus:
+    enum:
+    - Pending
+    - Shipped
+    - Delivered
+    - Cancelled
+    type: string
+    x-enum-varnames:
+    - Pending
+    - Shipped
+    - Delivered
+    - Cancelled
+  model.Product:
+    properties:
+      created_at:
+        type: string
+      currency:
+        type: string
+      price:
+        type: number
+      product_code:
+        type: string
+      product_description:
+        type: string
+      product_name:
+        type: string
+      stock:
+        type: integer
+      updated_at:
+        type: string
+    type: object
+  model.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      updated_at:
+        type: string
+      user_currency:
+        type: string
+      user_id:
+        type: string
+      user_role:
+        description: user or admin
+        type: string
+    type: object
+host: localhost:3000
+info:
+  contact: {}
+  description: This is a sample server Instashop server.
+  title: Instashop Swagger API
+  version: "1.0"
+paths:
+  /api/v1/admin/order/{order_reference}/status:
+    put:
+      description: Updates the status of a specific order for a user
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order Reference
+        in: path
+        name: order_reference
+        required: true
+        type: string
+      - description: Update Status Request
+        in: body
+        name: updateOrder
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateOrderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order status updated successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.OrderResponse'
+            - properties:
+                ' order':
+                  $ref: '#/definitions/model.Order'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Order has been (Shipped | Delivered)
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Update order status
+      tags:
+      - Orders
+  /api/v1/admin/product:
+    post:
+      description: Add a new product to the database
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ProductResponse'
+            - properties:
+                ' message':
+                  type: string
+                product:
+                  $ref: '#/definitions/model.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Create a new product
+      tags:
+      - Products
+  /api/v1/admin/product/{product_code}:
+    delete:
+      description: Delete a product by its product code
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product Code
+        in: path
+        name: product_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product has been successfully deleted
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "404":
+          description: Product not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "500":
+          description: Error in deleting product
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Delete a product
+      tags:
+      - Products
+    put:
+      description: Update product details
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product Code
+        in: path
+        name: product_code
+        required: true
+        type: string
+      - description: Product Data
+        in: body
+        name: product
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateProductRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ProductResponse'
+            - properties:
+                ' message':
+                  type: string
+                product:
+                  $ref: '#/definitions/model.Product'
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "404":
+          description: Not Found
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Update an existing product
+      tags:
+      - Products
+  /api/v1/product/{product_code}:
+    get:
+      description: Retrieve product details using the product code
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Product Code
+        in: path
+        name: product_code
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product successfully retrieved
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ProductResponse'
+            - properties:
+                ' message':
+                  type: string
+                product:
+                  $ref: '#/definitions/model.Product'
+              type: object
+        "404":
+          description: No product found
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ProductResponse'
+            - properties:
+                ' message':
+                  type: string
+                product:
+                  $ref: '#/definitions/model.Product'
+              type: object
+        "500":
+          description: Failed to retrieve product
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get a product by its product code
+      tags:
+      - Products
+  /api/v1/user/login:
+    post:
+      description: Authenticates a user using their email and password
+      parameters:
+      - description: Login Request
+        in: body
+        name: login
+        required: true
+        schema:
+          $ref: '#/definitions/handler.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Successful authentication
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' expires':
+                    type: string
+                  ' issued':
+                    type: string
+                  ' issuer':
+                    type: string
+                  ' user_id':
+                    type: string
+                  token:
+                    type: string
+                type: object
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' message':
+                    type: string
+                  error:
+                    type: boolean
+                type: object
+            type: object
+        "401":
+          description: Invalid credentials
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' message':
+                    type: string
+                  error:
+                    type: boolean
+                type: object
+            type: object
+      summary: Authenticate a user
+      tags:
+      - Authentication
+  /api/v1/user/order:
+    get:
+      description: Retrieves all orders for a given user with an optional status filter
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Order Status (Pending, Shipped, Delivered, Cancelled)
+        in: query
+        name: order_status
+        type: string
+      - description: Page (Default 1)
+        in: query
+        name: page
+        type: string
+      - description: Size (Default 10)
+        in: query
+        name: size
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of user orders
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ListOrderResponse'
+            - properties:
+                ' message':
+                  type: string
+                ' page':
+                  type: integer
+                ' size':
+                  type: integer
+                ' total_orders':
+                  type: integer
+                ' total_pages':
+                  type: integer
+                orders:
+                  items:
+                    $ref: '#/definitions/model.Order'
+                  type: array
+              type: object
+        "500":
+          description: Failed to retrieve orders
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Get user orders
+      tags:
+      - Orders
+    post:
+      description: Creates a new order for a user with a list of products
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Order Request
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/handler.OrderRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Order placed successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.OrderResponse'
+            - properties:
+                ' order':
+                  $ref: '#/definitions/model.Order'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Invalid input
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "404":
+          description: User not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "500":
+          description: Failed to place order
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Place a new order
+      tags:
+      - Orders
+  /api/v1/user/order/{order_reference}/cancel:
+    put:
+      description: Cancels an order associated with the provided order reference
+      parameters:
+      - description: Bearer Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Authenticated User ID
+        in: header
+        name: user_id
+        required: true
+        type: string
+      - description: Order Reference
+        in: path
+        name: order_reference
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Order cancelled successfully
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.OrderResponse'
+            - properties:
+                ' order':
+                  $ref: '#/definitions/model.Order'
+                message:
+                  type: string
+              type: object
+        "400":
+          description: Invalid input or Order in %s status cannot be cancelled
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "401":
+          description: Unauthorized access
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "404":
+          description: Order not found
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+        "500":
+          description: Failed to update order
+          schema:
+            allOf:
+            - $ref: '#/definitions/handler.ErrorResponse'
+            - properties:
+                ' message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
+      security:
+      - BearerAuth: []
+      summary: Cancel a user order
+      tags:
+      - Orders
+  /api/v1/user/signup:
+    post:
+      description: Registers a user with the provided details
+      parameters:
+      - description: Signup Request
+        in: body
+        name: signup
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User successfully registered
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' order':
+                    $ref: '#/definitions/model.User'
+                  message:
+                    type: string
+                type: object
+            type: object
+        "400":
+          description: Invalid input
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' message':
+                    type: string
+                  error:
+                    type: boolean
+                type: object
+            type: object
+        "500":
+          description: Server error
+          schema:
+            additionalProperties:
+              allOf:
+              - {}
+              - properties:
+                  ' message':
+                    type: string
+                  error:
+                    type: boolean
+                type: object
+            type: object
+      summary: Register a new user
+      tags:
+      - Authentication
+swagger: "2.0"

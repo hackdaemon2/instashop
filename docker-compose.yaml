@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: app-container
+    environment:
+      - DB_HOST=mysql
+      - DB_PORT=3306
+      - DB_USER=user
+      - DB_PASSWORD=password
+      - DB_NAME=instashopdb
+      - ADMIN_PASSWORD=mayfay_2018@M1
+      - ADMIN_EMAIL=john.doe@example.com
+      - ADMIN_FIRST_NAME=Joh
+      - PORT=3000
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.2
+    container_name: mysql-container
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: instashopdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3306:3306"
+    networks:
+      - app-network
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mysql-data:
+    driver: local
