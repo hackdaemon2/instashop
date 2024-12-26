@@ -9,6 +9,11 @@ import (
 	"github.com/go-playground/validator/v10"
 )
 
+type ErrorResponse struct {
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"error_message"`
+}
+
 func ExtractValidationErrorMessage(err error, structType any) map[int]string {
 	if err != nil {
 		var validationError validator.ValidationErrors

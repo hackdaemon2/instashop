@@ -7,6 +7,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/hackdaemon2/instashop/model"
+	"github.com/hackdaemon2/instashop/util"
 )
 
 const (
@@ -28,7 +29,7 @@ func parseToken(ctx *gin.Context) (*jwt.Token, error) {
 }
 
 func respondUnauthorized(ctx *gin.Context, message string) {
-	ctx.JSON(http.StatusUnauthorized, gin.H{"error": true, "message": message})
+	ctx.JSON(http.StatusUnauthorized, util.ErrorResponse{Error: true, ErrorMessage: message})
 	ctx.Abort()
 }
 
@@ -50,7 +51,7 @@ func IsAdmin() gin.HandlerFunc {
 				return
 			}
 		}
-		ctx.JSON(http.StatusForbidden, gin.H{"error": true, "message": FORBIDDEN_ACCESS_ERROR})
+		ctx.JSON(http.StatusForbidden, util.ErrorResponse{Error: true, ErrorMessage: FORBIDDEN_ACCESS_ERROR})
 		ctx.Abort()
 	}
 }

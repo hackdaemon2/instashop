@@ -24,13 +24,6 @@ definitions:
     - stock
     - user_id
     type: object
-  handler.ErrorResponse:
-    properties:
-      error:
-        type: boolean
-      message:
-        type: string
-    type: object
   handler.ListOrderResponse:
     properties:
       message:
@@ -151,6 +144,13 @@ definitions:
     - product_name
     - stock
     type: object
+  handler.UserResponse:
+    properties:
+      message:
+        type: string
+      user:
+        $ref: '#/definitions/model.User'
+    type: object
   model.Order:
     properties:
       created_at:
@@ -224,6 +224,26 @@ definitions:
         description: user or admin
         type: string
     type: object
+  util.ErrorResponse:
+    properties:
+      error:
+        type: boolean
+      error_message:
+        type: string
+    type: object
+  util.JwtData:
+    properties:
+      expires:
+        type: integer
+      issued:
+        type: integer
+      issuer:
+        type: string
+      token:
+        type: string
+      user_id:
+        type: string
+    type: object
 host: localhost:3000
 info:
   contact: {}
@@ -269,9 +289,9 @@ paths:
           description: Order has been (Shipped | Delivered)
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -314,9 +334,9 @@ paths:
           description: Bad Request
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -325,9 +345,9 @@ paths:
           description: Internal Server Error
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -358,9 +378,9 @@ paths:
           description: Product has been successfully deleted
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -369,9 +389,9 @@ paths:
           description: Product not found
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -380,9 +400,9 @@ paths:
           description: Error in deleting product
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -429,9 +449,9 @@ paths:
           description: Bad Request
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -440,9 +460,9 @@ paths:
           description: Not Found
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -451,9 +471,9 @@ paths:
           description: Internal Server Error
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -506,9 +526,9 @@ paths:
           description: Failed to retrieve product
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -534,48 +554,42 @@ paths:
         "200":
           description: Successful authentication
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' expires':
-                    type: string
-                  ' issued':
-                    type: string
-                  ' issuer':
-                    type: string
-                  ' user_id':
-                    type: string
-                  token:
-                    type: string
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/util.JwtData'
+            - properties:
+                ' expires':
+                  type: string
+                ' issued':
+                  type: string
+                ' issuer':
+                  type: string
+                ' user_id':
+                  type: string
+                token:
+                  type: string
+              type: object
         "400":
           description: Invalid input
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' message':
-                    type: string
-                  error:
-                    type: boolean
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/util.ErrorResponse'
+            - properties:
+                ' error_message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
         "401":
           description: Invalid credentials
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' message':
-                    type: string
-                  error:
-                    type: boolean
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/util.ErrorResponse'
+            - properties:
+                ' error_message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
       summary: Authenticate a user
       tags:
       - Authentication
@@ -633,9 +647,9 @@ paths:
           description: Failed to retrieve orders
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -677,9 +691,9 @@ paths:
           description: Invalid input
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -688,9 +702,9 @@ paths:
           description: User not found
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -699,9 +713,9 @@ paths:
           description: Failed to place order
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -748,9 +762,9 @@ paths:
           description: Invalid input or Order in %s status cannot be cancelled
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -759,9 +773,9 @@ paths:
           description: Unauthorized access
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -770,9 +784,9 @@ paths:
           description: Order not found
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -781,9 +795,9 @@ paths:
           description: Failed to update order
           schema:
             allOf:
-            - $ref: '#/definitions/handler.ErrorResponse'
+            - $ref: '#/definitions/util.ErrorResponse'
             - properties:
-                ' message':
+                ' error_message':
                   type: string
                 error:
                   type: boolean
@@ -809,42 +823,36 @@ paths:
         "201":
           description: User successfully registered
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' order':
-                    $ref: '#/definitions/model.User'
-                  message:
-                    type: string
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/handler.UserResponse'
+            - properties:
+                ' order':
+                  $ref: '#/definitions/model.User'
+                message:
+                  type: string
+              type: object
         "400":
           description: Invalid input
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' message':
-                    type: string
-                  error:
-                    type: boolean
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/util.ErrorResponse'
+            - properties:
+                ' error_message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
         "500":
           description: Server error
           schema:
-            additionalProperties:
-              allOf:
-              - {}
-              - properties:
-                  ' message':
-                    type: string
-                  error:
-                    type: boolean
-                type: object
-            type: object
+            allOf:
+            - $ref: '#/definitions/util.ErrorResponse'
+            - properties:
+                ' error_message':
+                  type: string
+                error:
+                  type: boolean
+              type: object
       summary: Register a new user
       tags:
       - Authentication

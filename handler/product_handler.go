@@ -11,7 +11,30 @@ import (
 	"github.com/hackdaemon2/instashop/repository"
 	"github.com/hackdaemon2/instashop/util"
 	"github.com/jinzhu/gorm"
+	"github.com/shopspring/decimal"
 )
+
+const (
+	PRODUCT_RETRIEVAL_ERROR = "Failed to retrieve product"
+	INVALID_USER_INPUT      = "Invalid input"
+)
+
+type ProductCommonData struct {
+	Description string          `json:"product_description"`
+	Name        string          `json:"product_name" binding:"required,min=3"`
+	Price       decimal.Decimal `json:"price" binding:"required"`
+	Stock       uint            `json:"stock" binding:"required,numeric"`
+	Currency    string          `json:"currency" binding:"required,min=3,max=3"`
+}
+
+type CreateProductRequest struct {
+	ProductCommonData
+	UserID string `json:"user_id" binding:"required"`
+}
+
+type UpdateProductRequest struct {
+	ProductCommonData
+}
 
 func roundToTwoDecimals(value float64) float64 {
 	// Multiply, round, and divide to keep 2 decimal precision
@@ -32,7 +55,7 @@ func newProduct(createNewProduct CreateProductRequest, user *model.User) *model.
 
 // Helper function for error handling and response
 func handleProductError(ctx *gin.Context, statusCode int, message string) {
-	util.LogAndHandleResponse(ctx, statusCode, ErrorResponse{Error: true, ErrorMessage: message})
+	util.LogAndHandleResponse(ctx, statusCode, util.ErrorResponse{Error: true, ErrorMessage: message})
 }
 
 // GetProduct retrieves a product by its product code
@@ -48,7 +71,7 @@ func handleProductError(ctx *gin.Context, statusCode int, message string) {
 // @Param product_code path string true "Product Code"
 // @Success 200 {object} handler.ProductResponse{product=model.Product, message=string} "Product successfully retrieved"
 // @Failure 404 {object} handler.ProductResponse{product=model.Product, message=string} "No product found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Failed to retrieve product"
+// @Failure 500 {object} util.ErrorResponse{error=bool, error_message=string} "Failed to retrieve product"
 // @Router /api/v1/product/{product_code} [get]
 func GetProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -94,9 +117,9 @@ func GetProduct(db *gorm.DB) gin.HandlerFunc {
 // @Param product_code path string true "Product Code"
 // @Param product body UpdateProductRequest true "Product Data"
 // @Success 200 {object} handler.ProductResponse{product=model.Product, message=string}
-// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string}
-// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string}
-// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string}
+// @Failure 400 {object} util.ErrorResponse{error=bool, error_message=string}
+// @Failure 404 {object} util.ErrorResponse{error=bool, error_message=string}
+// @Failure 500 {object} util.ErrorResponse{error=bool, error_message=string}
 // @Router /api/v1/admin/product/{product_code} [put]
 func UpdateProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -134,9 +157,9 @@ func UpdateProduct(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		response := gin.H{
-			"product": updatedProduct,
-			"message": "Product updated successfully",
+		response := ProductResponse{
+			Product: updatedProduct,
+			Message: "Product updated successfully",
 		}
 
 		util.LogAndHandleResponse(ctx, http.StatusOK, response)
@@ -154,9 +177,9 @@ func UpdateProduct(db *gorm.DB) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param Authorization header string true "Bearer Token"
 // @Param product_code path string true "Product Code"
-// @Success 200 {object} handler.ErrorResponse{error=bool, error_message=string} "Product has been successfully deleted"
-// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string} "Product not found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Error in deleting product"
+// @Success 200 {object} util.ErrorResponse{error=bool, error_message=string} "Product has been successfully deleted"
+// @Failure 404 {object} util.ErrorResponse{error=bool, error_message=string} "Product not found"
+// @Failure 500 {object} util.ErrorResponse{error=bool, error_message=string} "Error in deleting product"
 // @Router /api/v1/admin/product/{product_code} [delete]
 func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -178,7 +201,7 @@ func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 			return
 		}
 
-		response := ErrorResponse{
+		response := util.ErrorResponse{
 			Error:        false,
 			ErrorMessage: "Product has been successfully deleted",
 		}
@@ -199,8 +222,8 @@ func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 // @Param Authorization header string true "Bearer Token"
 // @Param product body CreateProductRequest true "Product Data"
 // @Success 201 {object} handler.ProductResponse{product=model.Product, message=string}
-// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string}
-// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string}
+// @Failure 400 {object} util.ErrorResponse{error=bool, error_message=string}
+// @Failure 500 {object} util.ErrorResponse{error=bool, error_message=string}
 // @Router /api/v1/admin/product [post]
 func CreateProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

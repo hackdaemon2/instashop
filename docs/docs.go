@@ -82,12 +82,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -161,12 +161,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -182,12 +182,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -268,12 +268,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -289,12 +289,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -310,12 +310,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -364,12 +364,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -385,12 +385,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -406,12 +406,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -504,12 +504,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -548,76 +548,73 @@ const docTemplate = `{
                     "200": {
                         "description": "Successful authentication",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " expires": {
-                                                "type": "string"
-                                            },
-                                            " issued": {
-                                                "type": "string"
-                                            },
-                                            " issuer": {
-                                                "type": "string"
-                                            },
-                                            " user_id": {
-                                                "type": "string"
-                                            },
-                                            "token": {
-                                                "type": "string"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.JwtData"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " expires": {
+                                            "type": "string"
+                                        },
+                                        " issued": {
+                                            "type": "string"
+                                        },
+                                        " issuer": {
+                                            "type": "string"
+                                        },
+                                        " user_id": {
+                                            "type": "string"
+                                        },
+                                        "token": {
+                                            "type": "string"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Invalid input",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " message": {
-                                                "type": "string"
-                                            },
-                                            "error": {
-                                                "type": "boolean"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.ErrorResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " error_message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "boolean"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     },
                     "401": {
                         "description": "Invalid credentials",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " message": {
-                                                "type": "string"
-                                            },
-                                            "error": {
-                                                "type": "boolean"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.ErrorResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " error_message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "boolean"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     }
                 }
@@ -714,12 +711,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -791,12 +788,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -812,12 +809,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -833,12 +830,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -917,12 +914,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -938,12 +935,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -959,12 +956,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -980,12 +977,12 @@ const docTemplate = `{
                         "schema": {
                             "allOf": [
                                 {
-                                    "$ref": "#/definitions/handler.ErrorResponse"
+                                    "$ref": "#/definitions/util.ErrorResponse"
                                 },
                                 {
                                     "type": "object",
                                     "properties": {
-                                        " message": {
+                                        " error_message": {
                                             "type": "string"
                                         },
                                         "error": {
@@ -1024,67 +1021,64 @@ const docTemplate = `{
                     "201": {
                         "description": "User successfully registered",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " order": {
-                                                "$ref": "#/definitions/model.User"
-                                            },
-                                            "message": {
-                                                "type": "string"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/handler.UserResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " order": {
+                                            "$ref": "#/definitions/model.User"
+                                        },
+                                        "message": {
+                                            "type": "string"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     },
                     "400": {
                         "description": "Invalid input",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " message": {
-                                                "type": "string"
-                                            },
-                                            "error": {
-                                                "type": "boolean"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.ErrorResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " error_message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "boolean"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     },
                     "500": {
                         "description": "Server error",
                         "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "allOf": [
-                                    {},
-                                    {
-                                        "type": "object",
-                                        "properties": {
-                                            " message": {
-                                                "type": "string"
-                                            },
-                                            "error": {
-                                                "type": "boolean"
-                                            }
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/util.ErrorResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        " error_message": {
+                                            "type": "string"
+                                        },
+                                        "error": {
+                                            "type": "boolean"
                                         }
                                     }
-                                ]
-                            }
+                                }
+                            ]
                         }
                     }
                 }
@@ -1121,17 +1115,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "user_id": {
-                    "type": "string"
-                }
-            }
-        },
-        "handler.ErrorResponse": {
-            "type": "object",
-            "properties": {
-                "error": {
-                    "type": "boolean"
-                },
-                "message": {
                     "type": "string"
                 }
             }
@@ -1311,6 +1294,17 @@ const docTemplate = `{
                 }
             }
         },
+        "handler.UserResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                },
+                "user": {
+                    "$ref": "#/definitions/model.User"
+                }
+            }
+        },
         "model.Order": {
             "type": "object",
             "properties": {
@@ -1415,6 +1409,37 @@ const docTemplate = `{
                 },
                 "user_role": {
                     "description": "user or admin",
+                    "type": "string"
+                }
+            }
+        },
+        "util.ErrorResponse": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "boolean"
+                },
+                "error_message": {
+                    "type": "string"
+                }
+            }
+        },
+        "util.JwtData": {
+            "type": "object",
+            "properties": {
+                "expires": {
+                    "type": "integer"
+                },
+                "issued": {
+                    "type": "integer"
+                },
+                "issuer": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }
