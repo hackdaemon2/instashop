@@ -32,7 +32,7 @@ func newProduct(createNewProduct CreateProductRequest, user *model.User) *model.
 
 // Helper function for error handling and response
 func handleProductError(ctx *gin.Context, statusCode int, message string) {
-	util.LogAndHandleResponse(ctx, statusCode, ErrorResponse{Error: true, Message: message})
+	util.LogAndHandleResponse(ctx, statusCode, ErrorResponse{Error: true, ErrorMessage: message})
 }
 
 // GetProduct retrieves a product by its product code
@@ -48,7 +48,7 @@ func handleProductError(ctx *gin.Context, statusCode int, message string) {
 // @Param product_code path string true "Product Code"
 // @Success 200 {object} handler.ProductResponse{product=model.Product, message=string} "Product successfully retrieved"
 // @Failure 404 {object} handler.ProductResponse{product=model.Product, message=string} "No product found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string} "Failed to retrieve product"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Failed to retrieve product"
 // @Router /api/v1/product/{product_code} [get]
 func GetProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -94,9 +94,9 @@ func GetProduct(db *gorm.DB) gin.HandlerFunc {
 // @Param product_code path string true "Product Code"
 // @Param product body UpdateProductRequest true "Product Data"
 // @Success 200 {object} handler.ProductResponse{product=model.Product, message=string}
-// @Failure 400 {object} handler.ErrorResponse{error=bool, message=string}
-// @Failure 404 {object} handler.ErrorResponse{error=bool, message=string}
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string}
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string}
+// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string}
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string}
 // @Router /api/v1/admin/product/{product_code} [put]
 func UpdateProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -154,9 +154,9 @@ func UpdateProduct(db *gorm.DB) gin.HandlerFunc {
 // @Security BearerAuth
 // @Param Authorization header string true "Bearer Token"
 // @Param product_code path string true "Product Code"
-// @Success 200 {object} handler.ErrorResponse{error=bool, message=string} "Product has been successfully deleted"
-// @Failure 404 {object} handler.ErrorResponse{error=bool, message=string} "Product not found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string} "Error in deleting product"
+// @Success 200 {object} handler.ErrorResponse{error=bool, error_message=string} "Product has been successfully deleted"
+// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string} "Product not found"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Error in deleting product"
 // @Router /api/v1/admin/product/{product_code} [delete]
 func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -179,8 +179,8 @@ func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 		}
 
 		response := ErrorResponse{
-			Error:   false,
-			Message: "Product has been successfully deleted",
+			Error:        false,
+			ErrorMessage: "Product has been successfully deleted",
 		}
 
 		util.LogAndHandleResponse(ctx, http.StatusOK, response)
@@ -199,8 +199,8 @@ func DeleteProduct(db *gorm.DB) gin.HandlerFunc {
 // @Param Authorization header string true "Bearer Token"
 // @Param product body CreateProductRequest true "Product Data"
 // @Success 201 {object} handler.ProductResponse{product=model.Product, message=string}
-// @Failure 400 {object} handler.ErrorResponse{error=bool, message=string}
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string}
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string}
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string}
 // @Router /api/v1/admin/product [post]
 func CreateProduct(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

@@ -55,8 +55,8 @@ func handleOrderError(ctx *gin.Context, statusCode int, message string, err erro
 	}
 
 	errorResponse := ErrorResponse{
-		Error:   true,
-		Message: message,
+		Error:        true,
+		ErrorMessage: message,
 	}
 
 	util.LogAndHandleResponse(ctx, statusCode, errorResponse)
@@ -126,10 +126,10 @@ func validateProducts(db *gorm.DB, productsDTO []ProductDTO, user *model.User) (
 // @Param user_id header string true "Authenticated User ID"
 // @Param order_reference path string true "Order Reference"
 // @Success 200 {object} handler.OrderResponse{message=string, order=model.Order} "Order cancelled successfully"
-// @Failure 400 {object} handler.ErrorResponse{error=bool, message=string} "Invalid input or Order in %s status cannot be cancelled"
-// @Failure 401 {object} handler.ErrorResponse{error=bool, message=string} "Unauthorized access"
-// @Failure 404 {object} handler.ErrorResponse{error=bool, message=string} "Order not found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string} "Failed to update order"
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string} "Invalid input or Order in %s status cannot be cancelled"
+// @Failure 401 {object} handler.ErrorResponse{error=bool, error_message=string} "Unauthorized access"
+// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string} "Order not found"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Failed to update order"
 // @Router /api/v1/user/order/{order_reference}/cancel [PUT]
 func CancelUserOrder(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -195,9 +195,9 @@ func CancelUserOrder(db *gorm.DB) gin.HandlerFunc {
 // @Param Authorization header string true "Bearer Token"
 // @Param order body OrderRequest true "Order Request"
 // @Success 201 {object} handler.OrderResponse{message=string, order=model.Order} "Order placed successfully"
-// @Failure 400 {object} handler.ErrorResponse{error=bool, message=string} "Invalid input"
-// @Failure 404 {object} handler.ErrorResponse{error=bool, message=string} "User not found"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string} "Failed to place order"
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string} "Invalid input"
+// @Failure 404 {object} handler.ErrorResponse{error=bool, error_message=string} "User not found"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Failed to place order"
 // @Router /api/v1/user/order [post]
 func PlaceOrder(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -268,7 +268,7 @@ func PlaceOrder(db *gorm.DB) gin.HandlerFunc {
 // @Param page query string false "Page (Default 1)"
 // @Param size query string false "Size (Default 10)"
 // @Success 200 {object} handler.ListOrderResponse{orders=[]model.Order, message=string, total_orders=int, total_pages=int, page=int, size=int} "List of user orders"
-// @Failure 500 {object} handler.ErrorResponse{error=bool, message=string} "Failed to retrieve orders"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Failed to retrieve orders"
 // @Router /api/v1/user/order [get]
 func GetUserOrders(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -339,7 +339,7 @@ func GetUserOrders(db *gorm.DB) gin.HandlerFunc {
 //	@Param updateOrder body UpdateOrderRequest true "Update Status Request"
 //
 // @Success 200 {object} handler.OrderResponse{message=string, order=model.Order} "Order status updated successfully"
-// @Failure 400 {object} handler.ErrorResponse{error=bool, message=string} "Order has been (Shipped | Delivered)"
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string} "Order has been (Shipped | Delivered)"
 // @Router /api/v1/admin/order/{order_reference}/status [put]
 func UpdateOrderStatus(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {

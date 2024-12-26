@@ -46,16 +46,16 @@ func newUserFromSignupRequest(signupRequest SignupRequest) (*model.User, error) 
 // @Tags Authentication
 // @Produce		json
 // @Param signup body SignupRequest true "Signup Request"
-// @Success 201 {object} map[string]any{message=string, order=model.User} "User successfully registered"
-// @Failure 400 {object} map[string]any{error=bool, message=string} "Invalid input"
-// @Failure 500 {object} map[string]any{error=bool, message=string} "Server error"
+// @Success 201 {object} handler.UserResponse{message=string, order=model.User} "User successfully registered"
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string} "Invalid input"
+// @Failure 500 {object} handler.ErrorResponse{error=bool, error_message=string} "Server error"
 // @Router /api/v1/user/signup [post]
 func Signup(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var signupRequest SignupRequest
 		if err := ctx.ShouldBindJSON(&signupRequest); err != nil { // Bind JSON and validate input
 			validationError := util.ExtractValidationErrorMessage(err, signupRequest)
-			util.LogAndHandleResponse(ctx, http.StatusBadRequest, ErrorResponse{Error: true, Message: validationError[0]})
+			util.LogAndHandleResponse(ctx, http.StatusBadRequest, ErrorResponse{Error: true, ErrorMessage: validationError[0]})
 			return
 		}
 
@@ -64,21 +64,21 @@ func Signup(db *gorm.DB) gin.HandlerFunc {
 
 		// validate passwords
 		if signupRequest.ConfirmPassword != signupRequest.Password {
-			errorResponse := ErrorResponse{Error: true, Message: "'password' and 'confirm_password' do not match"}
+			errorResponse := ErrorResponse{Error: true, ErrorMessage: "'password' and 'confirm_password' do not match"}
 			util.LogAndHandleResponse(ctx, http.StatusBadRequest, errorResponse)
 			return
 		}
 
 		user, err := newUserFromSignupRequest(signupRequest)
 		if err != nil {
-			util.LogAndHandleResponse(ctx, http.StatusInternalServerError, ErrorResponse{Error: true, Message: err.Error()})
+			util.LogAndHandleResponse(ctx, http.StatusInternalServerError, ErrorResponse{Error: true, ErrorMessage: err.Error()})
 			return
 		}
 
 		// Register user
 		user, err = repository.RegisterUser(db, user)
 		if err != nil {
-			util.LogAndHandleResponse(ctx, http.StatusInternalServerError, ErrorResponse{Error: true, Message: err.Error()})
+			util.LogAndHandleResponse(ctx, http.StatusInternalServerError, ErrorResponse{Error: true, ErrorMessage: err.Error()})
 			return
 		}
 
@@ -93,9 +93,9 @@ func Signup(db *gorm.DB) gin.HandlerFunc {
 // @Tags Authentication
 // @Produce		json
 // @Param login body LoginRequest true "Login Request"
-// @Success 200 {object} map[string]any{token=string, issuer=string, issued=string, expires=string, user_id=string} "Successful authentication"
-// @Failure 400 {object} map[string]any{error=bool, message=string} "Invalid input"
-// @Failure 401 {object} map[string]any{error=bool, message=string} "Invalid credentials"
+// @Success 200 {object} util.JwtData{token=string, issuer=string, issued=string, expires=string, user_id=string} "Successful authentication"
+// @Failure 400 {object} handler.ErrorResponse{error=bool, error_message=string} "Invalid input"
+// @Failure 401 {object} handler.ErrorResponse{error=bool, error_message=string} "Invalid credentials"
 // @Router /api/v1/user/login [post]
 func Login(db *gorm.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
@@ -103,7 +103,7 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 		if err := ctx.ShouldBindJSON(&loginRequest); err != nil { // Bind JSON and validate input
 			validationError := util.ExtractValidationErrorMessage(err, loginRequest)
 			fmt.Println(validationError)
-			response := ErrorResponse{Error: true, Message: validationError[0]}
+			response := ErrorResponse{Error: true, ErrorMessage: validationError[0]}
 			util.LogAndHandleResponse(ctx, http.StatusBadRequest, response)
 			return
 		}
@@ -114,7 +114,7 @@ func Login(db *gorm.DB) gin.HandlerFunc {
 		// Authenticate user
 		response, err := repository.LoginUser(db, loginRequest.Email, loginRequest.Password)
 		if err != nil {
-			response := ErrorResponse{Error: true, Message: "Invalid credentials"}
+			response := ErrorResponse{Error: true, ErrorMessage: "Invalid credentials"}
 			util.LogAndHandleResponse(ctx, http.StatusUnauthorized, response)
 			return
 		}

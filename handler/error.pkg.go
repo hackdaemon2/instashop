@@ -1,6 +1,6 @@
 package handler
 
 type ErrorResponse struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
+	Error        bool   `json:"error"`
+	ErrorMessage string `json:"error_message"`
 }
