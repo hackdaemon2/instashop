@@ -47,6 +47,8 @@ It was written in GOLANG
    ADMIN_EMAIL=john.doe@example.com
    ADMIN_FIRST_NAME=John
    ADMIN_LAST_NAME=Doe
+   PORT=3000
+   SECRET_KEY=secret
    ```
 
 ## Usage

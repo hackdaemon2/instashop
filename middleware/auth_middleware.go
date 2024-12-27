@@ -6,6 +6,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/hackdaemon2/instashop/config"
 	"github.com/hackdaemon2/instashop/model"
 	"github.com/hackdaemon2/instashop/util"
 )
@@ -24,7 +25,7 @@ func parseToken(ctx *gin.Context) (*jwt.Token, error) {
 
 	tokenStr := authHeader[7:]
 	return jwt.Parse(tokenStr, func(token *jwt.Token) (any, error) {
-		return []byte("secret_key"), nil
+		return []byte(config.GetEnv("SECRET_KEY")), nil
 	})
 }
 

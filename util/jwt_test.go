@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/hackdaemon2/instashop/config"
 	"github.com/hackdaemon2/instashop/model"
 	"github.com/stretchr/testify/assert"
 )
@@ -36,7 +37,7 @@ func TestGenerateJWT(t *testing.T) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, jwt.NewValidationError("unexpected signing method", jwt.ValidationErrorSignatureInvalid)
 		}
-		return []byte("secret_key"), nil
+		return []byte(config.GetEnv("SECRET_KEY")), nil
 	})
 
 	assert.NoError(t, err, "Expected no error while parsing the JWT")
