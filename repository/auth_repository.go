@@ -52,10 +52,10 @@ func LoginUser(db *gorm.DB, email, password string) (*util.JwtData, error) {
 		return nil, err
 	}
 
-	JwtData, err := util.GenerateJWT(existingUser.UserID, existingUser.Role)
+	jwtData, err := util.GenerateJWT(existingUser.UserID, existingUser.Role)
 	if err != nil {
 		return nil, err
 	}
 
-	return &JwtData, nil
+	return &jwtData, nil
 }
