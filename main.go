@@ -10,6 +10,7 @@ import (
 	_ "github.com/hackdaemon2/instashop/docs"
 	"github.com/hackdaemon2/instashop/handler"
 	"github.com/hackdaemon2/instashop/middleware"
+	"github.com/hackdaemon2/instashop/util"
 	"github.com/jinzhu/gorm"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -19,7 +20,7 @@ import (
 // for an endpoint or a non-existent URL is hit
 func noRouteOrMethod(status int, message string) gin.HandlerFunc {
 	return func(context *gin.Context) {
-		context.JSON(status, gin.H{"error": true, "message": message})
+		context.JSON(status, util.ErrorResponse{Error: true, ErrorMessage: message})
 	}
 }
 

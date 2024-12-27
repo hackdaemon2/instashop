@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/hackdaemon2/instashop/config"
 	"github.com/hackdaemon2/instashop/model"
 )
 
@@ -34,6 +35,6 @@ func GenerateJWT(userID string, role model.Role) (JwtData, error) {
 		"role":    role,
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	strToken, err := token.SignedString([]byte("secret_key"))
+	strToken, err := token.SignedString([]byte(config.GetEnv("SECRET_KEY")))
 	return newJwtData(strToken, userID, exp, iss), err
 }
