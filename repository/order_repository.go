@@ -23,10 +23,26 @@ func CreateOrder(db *gorm.DB, order model.Order) (*model.Order, error) {
 
 func UpdateOrder(db *gorm.DB, order model.Order) (*model.Order, error) {
 	// Update order fields
-	if err := db.Model(&order).Preload("Products", IS_DELETED_CLAUSE, false).Save(&order).Error; err != nil {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
+	if err := tx.Model(&order).Preload("Products", IS_DELETED_CLAUSE, false).Save(&order).Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
-	return &order, nil
+
+	err := tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return &order, nil
+	}
+
+	return nil, err
 }
 
 func GetUserOrder(db *gorm.DB, userID, orderReference string) (*model.Order, error) {

@@ -31,12 +31,27 @@ func GetProduct(db *gorm.DB, productCode string) (*model.Product, error) {
 
 // UpdateProduct updates an existing product
 func UpdateProduct(db *gorm.DB, product *model.Product) (*model.Product, error) {
+	tx := db.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			panic(r)
+		}
+	}()
+
 	// Update product fields
-	if err := db.Model(product).Save(product).Error; err != nil {
+	if err := tx.Model(product).Save(product).Error; err != nil {
+		tx.Rollback()
 		return nil, err
 	}
 
-	return product, nil
+	err := tx.Commit().Error
+	if err != nil {
+		tx.Rollback()
+		return product, nil
+	}
+
+	return nil, err
 }
 
 func DeleteProduct(db *gorm.DB, product *model.Product) error {
